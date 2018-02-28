@@ -1,0 +1,45 @@
+body {
+    overflow: hidden;
+}
+
+.login {
+    height: 200px;
+    width: 300px;
+    padding: 20px;
+    background-color: #37363a;
+    border-radius: 4px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -150px 0 0 -150px;
+    z-index: 99;
+}
+
+.login h1 {
+    text-align: center;
+    color: rgb(241, 245, 248);
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.login h6 {
+    text-align: center;
+    color: #FF5722;
+    font-size: 12px;
+    margin-bottom: 10px;
+}
+
+.form_code {
+    position: relative;
+}
+
+.form_code .code {
+    position: absolute;
+    right: 0;
+    top: 1px;
+    cursor: pointer;
+}
+
+.login_btn {
+    width: 100%;
+}

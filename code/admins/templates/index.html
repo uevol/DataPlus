@@ -1,0 +1,49 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>DataPlus-admins</title>
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+  <link href="{% static 'pics/favicon.ico' %}" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout">
+    <div class="layui-side layui-bg-black" id="sidebar">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item"><a href="{% url 'admins:MenuList' %}" target="iframe">模块管理</a></li>
+                <li class="layui-nav-item"><a href="{% url 'admins:UserList' %}" target="iframe">用户管理</a></li>
+                <li class="layui-nav-item"><a href="{% url 'admins:RoleList' %}" target="iframe">角色管理</a></li>
+                <li class="layui-nav-item"><a href="{% url 'admins:PermList' %}" target="iframe">权限管理</a></li>
+                <li class="layui-nav-item"><a href="{% url 'admins:ServiceList' %}" target="iframe">服务管理</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+       <iframe id="iframe" name="iframe" scrolling="yes" onload="changeFrameHeight()" frameborder="0" width="100%" src="{% url 'admins:MenuList' %}"></iframe>
+    </div>
+</div>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+<script type="text/javascript">
+    function changeFrameHeight(){
+        var ifm=document.getElementById("iframe");
+            // ifm.height=document.documentElement.clientHeight;
+            ifm.height=document.getElementById("sidebar").offsetHeight-3;
+      }
+
+    window.onresize=function(){  
+       changeFrameHeight();
+    } 
+
+</script>
+<script>
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+});
+</script>
+</body>
+</html>

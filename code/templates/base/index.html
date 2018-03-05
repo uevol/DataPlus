@@ -10,21 +10,21 @@
 </head>
 <body class="layui-layout-body">
 <div class="layui-layout layui-layout-admin">
-  <div class="layui-header">
+  <div class="layui-header" id="layui-header">
     <div class="layui-logo" style="font-size: 25px">
       <a href="/" style="color: #f8fcfb">Data Plus</a>
     </div>
     <!-- 头部区域（可配合layui已有的水平导航） -->
     <ul class="layui-nav layui-layout-left">
-      <li class="layui-nav-item"><a href="" target="myiframe">控制面板</a></li>
+      <li class="layui-nav-item"><a href="{% url 'dashboard:index' %}" target="myiframe">Dashboard</a></li>
+      <li class="layui-nav-item"><a href="{% url 'dashboard:index' %}" target="myiframe">主机管理</a></li>
+      <li class="layui-nav-item"><a href="{% url 'dashboard:index' %}" target="myiframe">作业平台</a></li>
       <li class="layui-nav-item">
-        <a href="javascript:;">其它系统</a>
+        <a href="javascript:;">更多模块</a>
         <dl class="layui-nav-child">
-          <dd><a href="" target="myiframe">主机管理</a></dd>
-          <dd><a href="" target="myiframe">作业中心</a></dd>
-          <dd><a href="" target="myiframe">用户管理</a></dd>
-          <dd><a href="" target="myiframe">菜单管理</a></dd>
-          <dd><a href="" target="myiframe">平台设置</a></dd>
+          {% for menu in menus  %}
+            <dd><a href="{{ menu.url }}" target="myiframe">{{ menu.name }}</a></dd>
+          {% endfor %}
         </dl>
       </li>
     </ul>
@@ -35,25 +35,32 @@
           {{request.user.username}}
         </a>
         <dl class="layui-nav-child">
-          <dd><a href="" target="myiframe">个人资料</a></dd>
-          <dd><a href="" target="myiframe">安全设置</a></dd>
-
+          <dd><a href="{% url 'admins:UserSet' %}" target="myiframe">账户设置</a></dd>
         </dl>
       </li>
       <li class="layui-nav-item"><a href="{% url 'logout' %}">注销</a></li>
     </ul>
   </div>
   
-   {% block content %} 
-   <iframe id="myiframe" name='myiframe' scrolling="yes" onload="changeFrameHeight()" frameborder="0" width="100%" src="https://www.baidu.com"></iframe> 
-   {% endblock content %}
+  <div class="layui-body" style="left: 0px" id="body">
+     <iframe id="myiframe" name='myiframe' scrolling="yes" onload="changeFrameHeight()" frameborder="0" width="100%" src="{% url 'dashboard:index' %}"></iframe>
+  </div>
+
+  <div id="layui-footer" class="layui-footer footer" style="text-align: center;left: 0px; color: #393D49">
+      ©2017
+      <a href="http://www.jinmuinfo.com">上海锦木信息有限公司</a>
+  </div>
 
 </div>
+
 <script src="{% static 'layui/layui.all.js' %}"></script>
 <script type="text/javascript">
     function changeFrameHeight(){
-        var ifm= document.getElementById("myiframe"); 
-        ifm.height=document.documentElement.clientHeight;
+        var ifm = document.getElementById("myiframe");
+        var header = document.getElementById("layui-header").offsetHeight
+        var footer = document.getElementById("layui-footer").offsetHeight
+        // console.log(body, header, footer, document.documentElement.clientHeight);
+        ifm.height = document.documentElement.clientHeight-header-footer-3;
       }
 
     window.onresize=function(){  

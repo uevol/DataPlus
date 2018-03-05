@@ -8,7 +8,6 @@ from django.dispatch import receiver
 class UserProfile(models.Model):
     ''' user profile '''
     user     = models.OneToOneField(User, related_name='profile', on_delete=models.CASCADE)
-    roles    = models.ManyToManyField('Role')
     phone    = models.CharField(max_length=30, blank=True)
     wechat   = models.CharField(max_length=30, blank=True)
     comment  = models.TextField(max_length=100, blank=True)
@@ -49,6 +48,8 @@ def create_or_update_group_profile(sender, instance, created, **kwargs):
 class Role(models.Model):
     ''' user role '''
     name   = models.CharField(max_length=30, unique=True)
+    code   = models.CharField(max_length=30, unique=True)
+    users  = models.ManyToManyField(User, blank=True)
     perms  = models.ManyToManyField('Perm', blank=True)
 
     class Meta:
@@ -59,9 +60,10 @@ class Role(models.Model):
         return self.name
 
 class Perm(models.Model):
-    ''' custom permission '''
+    ''' custom permission ''' 
     name   = models.CharField(max_length=100)
     code   = models.CharField(max_length=100)
+    module = models.CharField(max_length=100)
 
     class Meta:
         ''' class meta info '''
@@ -75,7 +77,9 @@ class Menu(models.Model):
     name   = models.CharField(max_length=100)
     code   = models.CharField(max_length=100)
     url    = models.CharField(max_length=100)
-    parent = models.ForeignKey('self', blank=True, on_delete=models.CASCADE)
+    parent = models.ForeignKey('self', blank=True, null=True, related_name="children", on_delete=models.CASCADE)
+    is_nav = models.BooleanField(default=False)
+    comment= models.CharField(max_length=100)
 
     class Meta:
         ''' class meta info '''
@@ -83,3 +87,20 @@ class Menu(models.Model):
 
     def __str__(self):
         return self.name
+
+class Service(models.Model):
+    name = models.CharField(max_length=100)
+    host = models.CharField(max_length=100)
+    port = models.IntegerField(blank=True)
+    path = models.CharField(max_length=200, blank=True)
+    user = models.CharField(max_length=100, blank=True)
+    password = models.CharField(max_length=100, blank=True)
+    comment = models.TextField(max_length=100, blank=True)
+
+    class Meta:
+        ''' class meta info '''
+        db_table = 'service'
+
+    def __str__(self):
+        return self.name
+        

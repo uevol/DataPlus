@@ -1,0 +1,92 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>user-list</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>
+<form class="layui-form layui-inline" action="">
+    <div class="layui-inline">
+        <div class="layui-input-inline">
+            <input type="text" id="search_filter" value="{{search_filter}}" placeholder="根据模块或权限名称搜索" autocomplete="off" class="layui-input" style="width: 192px">
+        </div>
+    </div>
+    <div class="layui-inline" style="width: 100px">
+        <select id="role_selected" lay-filter="role">
+            <option value="">全部角色</option>
+            {% for role in roles  %}
+                {% if role.id == role_selected.id %}
+                <option value={{ role.id }} selected>{{ role.name }}</option>
+                {% else %}
+                <option value={{ role.id }}>{{ role.name }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    </div>   
+</form>
+
+<a href="{% url 'admins:PermUpdate' %}"><button class="layui-btn">授权管理</button></a>
+<hr>
+<div class="layui-form">
+        <table class="layui-table">
+          <colgroup>
+            <col width="150">
+            <col width="150">
+            {% for role in all_role  %}
+            <col>
+            {% endfor %}
+          </colgroup>
+          <thead>
+            <tr>
+              <th>系统</th>
+              <th>权限</th>
+              {% for role in all_role  %}
+                <th>{{role.name}}</th>
+              {% endfor %}
+            </tr> 
+          </thead>
+          <tbody>
+          {% for perm in perm_list  %}
+            <tr>
+              <td>{{perm.perm_module}}</td>
+              <td>{{perm.perm_name}}</td>
+              {% for role in perm.roles %}
+                    {% if role %}
+                        <td><i class="layui-icon" style="color: #5FB878;">&#xe618;</i></td>
+                    {% else %}
+                        <td><i class="layui-icon" style="color: #FF5722;">&#x1006;</i></td>
+                    {% endif %}
+              {% endfor %}
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+<script>
+    var $ = layui.$;
+
+    $(document).keyup(function(event){
+        if(event.keyCode ==13){
+            var search_filter = $('#search_filter');
+            window.location.href = "/admins/perm/list/?search_filter=" + search_filter.val();
+        }
+    });
+
+    var form = layui.form;
+    form.on('select(role)', function(data){
+        var search_filter = $('#search_filter');
+        var role = $('#role_selected');
+        window.location.href = "/admins/perm/list/?search_filter=" + search_filter.val() + "&&role=" + role.val();
+    });
+</script>
+</body>
+</html>

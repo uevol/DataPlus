@@ -6,6 +6,7 @@ from django.contrib.auth import logout as auth_logout
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.views.generic import TemplateView
+from admins.models import *
 
 def login(request):
     """ user login """
@@ -38,4 +39,5 @@ def logout(request):
 
 @login_required
 def base(request):
-    return render(request, 'base/index.html')
+    menus = Menu.objects.all()
+    return render(request, 'base/index.html', locals())

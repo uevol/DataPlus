@@ -1,0 +1,66 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>layui</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<a href="{% url 'admins:MenuAdd' %}"><button class="layui-btn">添加模块</button></a>
+
+<table class="layui-hide" id="demo" lay-filter="demo"></table>
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs" lay-event="detail">查看</a>
+    <a class="layui-btn layui-btn-xs" lay-event="update">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script>
+    var table = layui.table;
+    var $ = layui.$;
+    var tableIns = table.render({
+        elem: '#demo'
+        ,url: '/admins/menu/list/api' //数据接口
+        ,cols: [[
+        {field: 'name', title: '菜单名称', width:150, fixed: true}
+        ,{field: 'code', title: '菜单ID'}
+        ,{field: 'url', title: 'URL'} 
+        ,{field: 'comment', title: '备注说明'}
+        ,{title: '操作', fixed: 'right', width:150, align:'center', toolbar: '#barDemo'}
+        ]]
+        ,page: true
+        ,limits: [10,50,100,1000]
+    });
+
+    //监听工具条
+    table.on('tool(demo)', function(obj){
+        var data = obj.data;
+        if(obj.event === 'del'){
+            layer.confirm('确定删除？', function(index){
+                $.get('/admins/menu/delete/' + data.id, function(res){
+                    if (res.code) {
+                        obj.del();
+                        layer.msg(res.msg, {icon: 1});
+                    }
+                    else {
+                        layer.alert('错误信息:'+ res.msg);
+                    }
+                });
+                layer.close(index);
+            });
+        } else if(obj.event === 'update'){
+            window.location.href = '/admins/menu/update/' + data.id;
+        } else if(obj.event === 'detail') {
+            window.location.href = '/admins/menu/detail/' + data.id;
+        }
+    });
+</script>
+</body>
+</html>

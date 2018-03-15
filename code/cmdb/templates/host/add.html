@@ -1,0 +1,44 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>host-list</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+<div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
+    <ul class="layui-tab-title">
+        <li class="layui-this">Linux</li>
+        <li>Windows</li>
+    </ul>
+    <div class="layui-tab-content" style="height: 100px;">
+        <div class="layui-tab-item layui-show">
+            <p class="site-demo-text"><b>支持系统列表：</b></p>
+            <br> 
+            <p class="site-demo-text">Centos 5/6/7、Redhat 5/6/7</p>
+            <br>    
+            <p class="site-demo-text"><b>提供一键式安装方式，请复制如下命令，通过左上角Web终端登录服务器执行：</b></p>
+            <br> 
+            <blockquote class="layui-elem-quote layui-quote-nm">
+                curl -L {{url}}{{linux_script}} | bash
+            </blockquote> 
+            <p class="site-demo-text">安装成功后，即可在主机管理页面中查看到该主机。</p>
+        </div>
+        <div class="layui-tab-item">
+            <p class="site-demo-text"><b>支持系统列表：</b></p>
+            <br> 
+            <p class="site-demo-text"> Windows XP/7/8/10、Windows Server 2003/2008/2012</p>
+            <br>    
+            <p class="site-demo-text">提供一键式安装方式，在windows机器中请点击下载保存 <a href="{{url}}{{win_script}}" style="color: #01AAED">Salt-Minion-2016.11.7-x86-Setup.exe </a>安装包，并右键以管理员权限运行安装（需Administrator权限）</p>
+            <br> 
+            <p class="site-demo-text">安装成功后，即可在主机管理页面中查看到该主机。</p>
+        </div>
+    </div>
+</div>
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+</body>
+</html>

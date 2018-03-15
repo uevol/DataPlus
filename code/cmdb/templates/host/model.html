@@ -1,0 +1,82 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>host-model</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>
+    <div class="layui-inline">
+        <a href="{% url 'cmdb:HostAddProp' %}"><button class="layui-btn">添加字段</button></a>
+    </div>
+    <div class="layui-form">
+        <table class="layui-table">
+          <colgroup>
+            <col width="100">
+            <col width="100">
+            <col width="250">
+            <col width="80">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>字段名称</th>
+              <th>字段代码</th>
+              <th>枚举值</th>
+              <th>操作</th>
+            </tr> 
+          </thead>
+          <tbody>
+          {% for prop in host.props.all  %}
+            <tr>
+              <td>{{prop.name}}</td>
+              <td>{{prop.code}}</td>
+              <td>{{prop.optional_value  | default_if_none:""}}</td>
+              <td>
+                  {% if prop.is_must %}
+                  <a href=""><button class="layui-btn layui-btn-xs layui-btn-disabled hover">编辑</button></a>
+                  <button class="layui-btn layui-btn-xs layui-btn-danger layui-btn-disabled hover">删除</button>
+                  {% else %}
+                     <a href="{% url 'cmdb:HostUpdateProp' prop.id %}"><button class="layui-btn layui-btn-xs">编辑</button></a>
+                    <button class="layui-btn layui-btn-xs layui-btn-danger" onclick="delete_prop('{{prop.id}}')">删除</button>
+                  {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+          </tbody>
+        </table>
+    </div>
+</div>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+<script>
+    var $ = layui.$;
+    var layer = layui.layer;
+    var tipsi;
+    $(".hover").hover(function(){
+       tipsi = layer.tips('系统资源,不能编辑或删除',this,{time:0});
+     },function(){
+          layer.close(tipsi);
+     });
+
+    function delete_prop(id) {
+        layer.confirm('确定删除？', function(index){
+            $.get("/cmdb/host/delprop/"+id, function(res){
+                if (res.code) {
+                    layer.msg(res.msg, {icon: 1});
+                    setTimeout("window.location.href= \"{% url 'cmdb:HostModel' %}\"", 2000);
+                }
+                else {
+                    layer.alert('错误信息:'+ res.msg);
+                }
+            });
+            layer.close(index);
+        });
+     }
+</script>
+</body>
+</html>

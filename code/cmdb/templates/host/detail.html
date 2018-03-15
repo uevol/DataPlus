@@ -1,0 +1,109 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px">
+<head>
+  <meta charset="utf-8">
+  <title>cmdb-HostDetail</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+  <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+</head>
+<body>
+              
+<fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+  <legend>主机信息</legend>
+</fieldset>
+<form class="layui-form" action="">
+		    <div class="layui-form-item">
+	        	<div class="layui-block">
+		            <label class="layui-form-label">主机名 </label>
+		            <div class="layui-input-inline">
+		            	<input type="text" name="hostname" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.hostname}}" disabled>
+	            	</div>
+	        	</div>
+	    	</div>
+		    <div class="layui-form-item">
+		        <div class="layui-block">
+		            <label class="layui-form-label">IP地址 </label>
+		            <div class="layui-input-inline">
+		            <input type="text" name="ip" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.ip}}" disabled>
+		            </div>
+		        </div>
+		    </div>   		
+
+   			<div class="layui-form-item">
+        		<label class="layui-form-label">操作系统 </label>
+        		<div class="layui-input-inline">
+		            <input type="text" name="os" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.os}}" disabled>
+		        </div>
+    		</div>
+
+		    <div class="layui-form-item" pane="">
+		        <label class="layui-form-label">处理器</label>
+		        <div class="layui-input-block">
+		            <input type="text" name="cpu" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.cpu}}" disabled>
+		        </div>
+		    </div>
+
+		    <div class="layui-form-item">
+	        	<div class="layui-block">
+		            <label class="layui-form-label">内存 </label>
+		            <div class="layui-input-inline">
+		            	<input type="text" name="mem" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.mem}} G" disabled>
+	            	</div>
+	        	</div>
+	    	</div>
+
+	    	<div class="layui-form-item">
+	        	<div class="layui-block">
+		            <label class="layui-form-label">网卡 </label>
+		            <div class="layui-input-block">
+		            	<input type="text" name="eth" lay-verify="required" autocomplete="off" class="layui-input" value="{{host.eth}}" disabled>
+	            	</div>
+	        	</div>
+	    	</div>
+	    	
+		    <div class="layui-form-item">
+		        <div class="layui-block">
+		            <label class="layui-form-label">虚拟/物理 </label>
+		            <div class="layui-input-inline">
+		            <input type="text" name="is_virtual" autocomplete="off" class="layui-input" value="{{host.is_virtual}}" disabled>
+		            </div>
+		        </div>
+		    </div>
+
+		    <div class="layui-form-item">
+		        <div class="layui-block">
+		            <label class="layui-form-label">Salt状态 </label>
+		            <div class="layui-input-inline">
+		            <input type="text" name="minion_status" autocomplete="off" class="layui-input" value="{{host.minion_status}}" disabled>
+		            </div>
+		        </div>
+		    </div> 
+
+            {% for field in custom_field %}
+		    <div class="layui-form-item">
+		        <div class="layui-block">
+		            <label class="layui-form-label">{{field.name}} </label>
+		            <div class="layui-input-inline">
+		            <input type="text" name="{{field.code}}" autocomplete="off" class="layui-input" value="{{field.value}}" disabled>
+		            </div>
+		        </div>
+		    </div> 
+            {% endfor %}
+
+		    <div class="layui-form-item">
+		      <div class="layui-input-block">
+		        <a href="{% url 'cmdb:HostUpdate' host.minion_id %}" class="layui-btn layui-btn-sm">编辑</a>
+		        <a class="layui-btn layui-btn-sm layui-btn-primary" onClick="javascript :history.back(-1);">返回</a>
+		      </div>
+		    </div>
+</form>
+          
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+<!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
+
+</body>
+</html>

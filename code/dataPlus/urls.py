@@ -25,4 +25,5 @@ urlpatterns = [
     path('dashboard/', include('dashboard.urls', namespace='dashboard')),
     path('admins/', include('admins.urls', namespace='admins')),
     path('jobs/', include('jobs.urls', namespace='jobs')),
+    path('cmdb/', include('cmdb.urls', namespace='cmdb')),
 ]

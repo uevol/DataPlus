@@ -2,12 +2,12 @@
 # @Author: yangwei
 # @Date:   2018-03-05 15:32:05
 # @Last Modified by:   yangwei
-# @Last Modified time: 2018-03-05 16:43:38
+# @Last Modified time: 2018-03-13 16:47:30
+# @run method: python manage.py runscript init
 
 from django.contrib.auth.models import User, Group
 from admins.models import Role, Perm, Service, Menu
 
-# create menu
 menu_list = [
     {
         'name': '主机管理',
@@ -38,7 +38,6 @@ for menu in menu_list:
         print('****************************************************')
         break
 
-# create permission
 perms_list = [
     {
         '用户管理':
@@ -112,20 +111,18 @@ for item in perms_list:
         for module, perms in item.items():
             for perm in perms:
                 permission, status = Perm.objects.update_or_create(module=module, name=perm['name'], code=perm['code'])
-                # print('************%s -- %s -- %s************'%(module.encode('utf-8'), perm['name'].encode('utf-8'), perm['code']))
     except Exception as e:
         print('**************Error: create permission**************')
         print(str(e), 'create permission')
         print('****************************************************')
         break
 
-# create roles
-role_list = ['管理员', '运维', '测试', '开发', '普通用户']
-for name in role_list:
+role_list = [('管理员', 'admin'), ('运维', 'ops'), ('测试', 'test'), ('开发', 'dev'), ('普通用户', 'common')]
+for r in role_list:
     try:
-        role, role_created = Role.objects.get_or_create(name=name)
+        role, role_created = Role.objects.get_or_create(name=r[0], code=r[1])
         if role:
-            if role.name == '管理员':
+            if role.code == 'admin':
                 perms = Perm.objects.all()
                 role.perms.set(perms)
     except Exception as e:
@@ -135,7 +132,6 @@ for name in role_list:
         break
 
 
-# create admin user
 admin_user_list = [{'username': 'admin', 'password': 'admin@123'}]
 try:
     for user in admin_user_list:
@@ -152,7 +148,6 @@ except Exception as e:
   print(str(e))
   print('****************************************************')
 
-# create service for devops
 service_list = [
     {
     'name': 'webssh',
@@ -176,188 +171,67 @@ for service in service_list:
         print('****************************************************')
         break
 
-# create configration category
-# from cmdb.models import CiCategory, CiProperty
-# ci_c_list = [
-#     {
-#         'name': '主机管理',
-#         'code': 'host', 
-#         'show_in_left': True, 
-#         'comment': '主机管理', 
-#         'is_must': True,
-#         'properties':[
-#                 {
-#                     'name': '服务器ID', 
-#                     'code': 'server_id', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': False, 
-#                     'is_search': False
-#                 },
-#                 {
-#                     'name': '主机名', 
-#                     'code': 'hostname', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': 'IP地址', 
-#                     'code': 'ip', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '操作系统', 
-#                     'code': 'os', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': 'CP', 
-#                     'code': 'cp', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '内存 (G)', 
-#                     'code': 'memSize', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '虚拟/物理', 
-#                     'code': 'is_virtual', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '网卡', 
-#                     'code': 'eth', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': False
-#                 },
-#                 {
-#                     'name': '硬盘', 
-#                     'code': 'disk', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': False,
-#                     'is_search': False
-#                 },
-#                 {
-#                     'name': 'Salt客户端ID', 
-#                     'code': 'minion_id', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'optional', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': False
-#                 },
-#                 {
-#                     'name': 'Salt客户端状态', 
-#                     'code': 'minion_status', 
-#                     'is_must': True, 
-#                     'is_edit': False,
-#                     'form_type': 'optional', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '运营状态', 
-#                     'code': 'host_status', 
-#                     'is_must': True, 
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True, 
-#                     'optional_value': '运营中;故障中;未上线;下线隔离中;开发机;测试机;维修中;报废'
-#                 },
-#                 {
-#                     'name': '运维负责人', 
-#                     'code': 'admin', 
-#                     'is_must': True, 
-#                     'form_type': 'required', 
-#                     'value_type': 'array', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '标签', 
-#                     'code': 'tags', 
-#                     'is_must': True, 
-#                     'form_type': 'optional', 
-#                     'value_type': 'array', 
-#                     'show_in_table': True, 
-#                     'is_search': True
-#                 },
-#                 {
-#                     'name': '环境', 
-#                     'code': 'env', 
-#                     'is_must': True, 
-#                     'form_type': 'required', 
-#                     'value_type': 'str', 
-#                     'show_in_table': True, 
-#                     'is_search': True, 
-#                     'optional_value': '开发;测试;生产'
-#                 }
-#         ]
-#     }
-# ]
-# for category in ci_c_list:
-#     try:
-#         obj, status = CiCategory.objects.update_or_create(name=category['name'], code=category['code'], \
-#         defaults={'show_in_left': category['show_in_left'], 'comment': category['comment'], \
-#         'is_must': category['is_must']})
-#         if status:
-#             print '*'*20, '新建资源模型：%s'%(obj.name), '*'*20
-#         if obj:
-#             for item in category['properties']:
-#                 property_obj, is_created = CiProperty.objects.update_or_create(name=item['name'], \
-#                 code=item['code'], ci_category_id=obj.id, defaults={'is_must':item['is_must'], 'form_type': item['form_type'], \
-#                 'value_type': item['value_type'], 'show_in_table': item['show_in_table']})
-#                 if 'optional_value' in item.keys():
-#                     property_obj.optional_value = item['optional_value']
-#                 if 'is_edit' in item.keys():
-#                     property_obj.is_edit = item['is_edit']
-#                 property_obj.save()
-#                 print '配置项分类:%s ---- 配置项属性:%s'%(property_obj.ci_category.name.encode('utf-8'), property_obj.name.encode('utf-8'))
-#     except Exception as e:
-#         raise e
-
+from cmdb.models import Category, Prop
+c_list = [
+    {
+        'name': '主机',
+        'code': 'host',
+        'props': [
+            {
+                'code': 'hostname',
+                'name': '主机名',
+                'is_must': True,
+            },
+            {
+                'code': 'ip',
+                'name': 'IP地址',
+                'is_must': True,
+            },
+            {
+                'code': 'os',
+                'name': '操作系统',
+                'is_must': True,
+            },
+            {
+                'code': 'cpu',
+                'name': '处理器',
+                'is_must': True,
+            },
+            {
+                'code': 'mem',
+                'name': '内存',
+                'is_must': True,
+            },
+            {
+                'code': 'eth',
+                'name': '网卡',
+                'is_must': True,
+            },
+            {
+                'code': 'is_virtual',
+                'name': '虚拟/物理',
+                'is_must': True,
+            },
+            {
+                'code': 'minion_status',
+                'name': 'salt客户端状态',
+                'is_must': True,
+            }
+        ] 
+    }
+]
+for c in c_list:
+    try:
+        category, created = Category.objects.get_or_create(name=c['name'], code=c['code'])
+        # if created:
+        for p in c['props']:
+            prop, marked = Prop.objects.get_or_create(**p)
+            category.props.add(prop)
+    except Exception as e:
+        print('**************   Error: create category  **************')
+        print(str(e))
+        print('****************************************************')
+    
 
 # from devops.settings import scheduler
 # from ops.jobs import check_minion_status,update_grains

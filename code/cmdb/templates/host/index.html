@@ -1,0 +1,47 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <title>DataPlus-hosts</title>
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}">
+  <link href="{% static 'pics/favicon.ico' %}" rel="shortcut icon" type="image/x-icon" />
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout">
+    <div class="layui-side layui-bg-black" id="sidebar">
+        <div class="layui-side-scroll">
+          <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+            <ul class="layui-nav layui-nav-tree"  lay-filter="test">
+                <li class="layui-nav-item"><a href="{% url 'cmdb:HostList' %}" target="iframe1">主机列表</a></li>
+                <li class="layui-nav-item"><a href="{% url 'cmdb:HostAdd' %}" target="iframe1">添加主机</a></li>
+                <li class="layui-nav-item"><a href="{% url 'cmdb:HostModel' %}" target="iframe1">主机模型</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="layui-body">
+       <iframe id="iframe1" name="iframe1" scrolling="yes" onload="changeFrameHeight()" frameborder="0" width="100%" src="{% url 'cmdb:HostList' %}"></iframe>
+    </div>
+</div>
+<script src="{% static 'layui/layui.all.js' %}"></script>
+<script type="text/javascript">
+    function changeFrameHeight(){
+        var ifm=document.getElementById("iframe1");
+            // ifm.height=document.documentElement.clientHeight;
+            ifm.height=document.getElementById("sidebar").offsetHeight-3;
+      }
+
+    window.onresize=function(){  
+       changeFrameHeight();
+    } 
+
+</script>
+<script>
+//JavaScript代码区域
+layui.use('element', function(){
+  var element = layui.element;
+});
+</script>
+</body>
+</html>

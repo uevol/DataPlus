@@ -1,14 +1,16 @@
 from django.shortcuts import render
 from .models import *
 from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import json
 from utils.paginator import my_paginator
 from django.db.models import Q
 from admins.models import Service
 from dataPlus.settings import mongo
 import datetime as dt
-
+import xlsxwriter
+import io
+import xlrd
 # Create your views here.
 
 def HostIndex(request):
@@ -152,7 +154,52 @@ def HostUpdateBatch(request):
     except Exception as e:
         res = {'code': 0, 'msg': str(e)}
     finally:
-        return JsonResponse(res)   
+        return JsonResponse(res)
+
+def HostExport(request):
+    ids = request.POST.get('ids', '')
+    hosts = mongo.dataPlus.host.find({'minion_id': {'$in': ids.split(',')}})
+    category = Category.objects.get(code='host')
+    fields = ['minion_id'] + [prop.code for prop in category.props.all()]
+    output = io.BytesIO()
+    workbook = xlsxwriter.Workbook(output, {'in_memory': True})
+    worksheet = workbook.add_worksheet()
+    worksheet.write_row('A1', fields)
+    row = 2
+    for host in hosts:
+        data = [host[field] for field in fields]
+        worksheet.write_row('A'+str(row), data)
+        row +=1
+    workbook.close()
+    output.seek(0)
+    response = HttpResponse(output.read(), content_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")  
+    response['Content-Disposition'] = 'attachment; filename=%s.xlsx' % dt.datetime.now().strftime("%Y-%m-%d-%H-%M-%S") 
+    return response
+
+def HostImport(request):
+    if request.method == "POST":
+        try:
+            myFile = request.FILES.get("file", None)
+            wb = xlrd.open_workbook(file_contents=myFile.read())
+            table = wb.sheets()[0]
+            rows = table.nrows
+            category = Category.objects.get(code='host')
+            fields = ['minion_id'] + [prop.code for prop in category.props.all()]
+            for i in range(1, rows):
+                try:
+                    data = { code: value for code, value in zip(fields, table.row_values(i))}
+                    mongo.dataPlus.host.update({'minion_id':data['minion_id']}, {'$set': data, \
+                "$currentDate": {"lastModified": True}}, upsert=True)
+                except Exception as e:
+                    res = {'code': 0, 'msg': '导入停止，原因：'%(data['ip']+str(e))}
+                    break
+                    return JsonResponse(res)
+            res = {'code': 1, 'msg': '导入完成'}
+        except Exception as e:
+            res = {'code': 0, 'msg': str(e)}
+        finally:
+            return JsonResponse(res)
+    return render(request, 'host/host_import.html', locals())
 
 def HostAddProp(request):
     if request.method == "POST":

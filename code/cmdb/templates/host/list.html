@@ -20,8 +20,11 @@
 
     <button class="layui-btn" id="show_form">高级搜索</button>
     <a><button class="layui-btn layui-btn-disabled dis_or_able" id='batch_edit'>批量编辑</button></a>
-    <a href=""><button class="layui-btn">导入</button></a>
-    <a href=""><button class="layui-btn layui-btn-disabled dis_or_able">导出</button></a>
+    <a href="{% url 'cmdb:HostImport' %}"><button class="layui-btn" id="import">导入</button></a>
+    <form action="{% url 'cmdb:HostExport' %}" method="post" id="export_hosts" style="display: inline;">{% csrf_token %}
+        <input type="text" name="ids" id="host_ids" hidden>
+        <button class="layui-btn layui-btn-disabled dis_or_able" onclick="export_hosts()" id="export">导出</button>  
+    </form>
 
     <hr>
     <form class="layui-form" action='' method="" style="display: none" id="search_form">
@@ -194,17 +197,21 @@
         ,limits: [10,50,100,1000]
     });
 
-    var ids = [];
-    var ips = [];
+    // var ids = [];
+    // var ips = [];
     table.on('checkbox(demo)', function(obj){
         //console.log(obj)
         var checkStatus = table.checkStatus('idTest'); //test即为基础参数id对应的值
         if (checkStatus.data.length > 0){
+            ids = [];
+            ips = [];
             $(".dis_or_able").removeClass("layui-btn-disabled");
             for (i in checkStatus.data) {
                 ids.push(checkStatus.data[i].minion_id);
                 ips.push(checkStatus.data[i].ip);
             }
+            document.getElementById("ids").value = ids;
+            document.getElementById("ips").value = ips;
 
         } else {
             $(".dis_or_able").addClass("layui-btn-disabled");
@@ -263,8 +270,8 @@
 
     $('#batch_edit').click(function(){
         document.getElementById("batch_edit_form").style.display="inline";
-        document.getElementById("ids").value = ids;
-        document.getElementById("ips").value = ips;
+        // document.getElementById("ids").value = ids;
+        // document.getElementById("ips").value = ips;
     });
 
     $('#hidden_batch_form').click(function(){
@@ -303,6 +310,20 @@
             layer.close(index);
         });
         return false;
+    });
+
+    function export_hosts() {
+        $("input[name='ids']").val(ids);
+        $("#export_hosts").submit();
+    }
+
+    var layer = layui.layer;
+    var tipsi;
+
+    $("#import").hover(function(){
+       tipsi = layer.tips('请先导出一份作为模板,按模板填写信息后导入；注意:请务必不要更改表头',this,{time:0});
+     },function(){
+          layer.close(tipsi);
     });
 
 </script>

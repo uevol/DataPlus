@@ -1,0 +1,90 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>jobs-cmd</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>
+
+	<form class="layui-form" action="#" method="">{% csrf_token %}
+	    <div class="layui-form-item">
+	        <label class="layui-form-label">任务类型 <span style="color: #FF5722">*</span></label>
+	        <div class="layui-input-block">
+	          <input type="radio" name="cron_type" value="command" title="命令" checked="">
+	          <input type="radio" name="cron_type" value="script" title="脚本">
+	        </div>
+	    </div>
+
+	    <div class="layui-form-item">
+	        <label class="layui-form-label">时间格式 <span style="color: #FF5722">*</span></label>
+	        <div class="layui-input-block">
+	            <input class="layui-input" name="cron_string" lay-verify="required" type="text" placeholder="crontab格式: * * * * * (分 时 日 月 周)">
+	        </div>
+	    </div>
+
+	    <div class="layui-form-item">
+	        <label class="layui-form-label">命令参数 <span style="color: #FF5722">*</span></label>
+	        <div class="layui-input-block">
+	            <input class="layui-input" name="cmd" lay-verify="required" type="text" placeholder="执行命令,如: echo hello; 执行脚本,请填写脚本管理菜单中存在的脚本名,如test.sh">
+	        </div>
+	    </div>
+
+	    <div class="layui-form-item layui-form-text">
+	        <label class="layui-form-label">主机 <span style="color: #FF5722">*</span></label>
+	        <div class="layui-input-block">
+	            <input type="text" name="hosts" id="hosts" lay-verify="required" placeholder="请输入内容主机salt客户端id, 或者点击下方按钮筛选主机" class="layui-input">
+	        </div>
+	    </div>
+
+	    <div class="layui-form-item">
+	        <div class="layui-input-block">
+	            <button class="layui-btn" lay-submit="" lay-filter="demo1">创建任务</button>
+	            <button class="layui-btn" type="button" onclick="select_host()">筛选主机</button>
+	            <button type="button" class="layui-btn layui-btn-primary" onclick="javascript:window.history.back()">取消</button>
+	        </div>
+	    </div>
+	</form>
+
+</div>
+
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+
+<script>
+    var $ = layui.$;
+    var layer = layui.layer;
+    function select_host() {
+        layer.open({
+            type: 2,
+            title: '筛选主机',
+            maxmin: true, //开启最大化最小化按钮
+            area: ['90%', '60%'],
+            content: "{% url 'cmdb:HostSelect' %}" //这里content是一个URL，如果你不想让iframe出现滚动条，你还可以content: ['http://sentsin.com', 'no']
+        });
+    }
+
+    var form = layui.form;
+    form.on('submit(demo1)', function(data){
+        var index = layer.load(1);
+        $.post("{% url 'jobs:CronAdd' %}", data.field, function(res){
+            layer.close(index);
+            if (res.code){
+                layer.msg(res.msg, {icon: 1});
+                setTimeout("window.location.href= \"{% url 'jobs:CronIndex' %}\"", 2000);
+            }
+            else {
+                layer.alert('错误信息:'+ res.msg);
+            } 
+        });
+        return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+    });
+</script>
+</body>
+</html>

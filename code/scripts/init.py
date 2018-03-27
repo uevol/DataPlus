@@ -2,7 +2,7 @@
 # @Author: yangwei
 # @Date:   2018-03-05 15:32:05
 # @Last Modified by:   yangwei
-# @Last Modified time: 2018-03-13 16:47:30
+# @Last Modified time: 2018-03-26 13:13:20
 # @run method: python manage.py runscript init
 
 from django.contrib.auth.models import User, Group
@@ -12,13 +12,13 @@ menu_list = [
     {
         'name': '主机管理',
         'code': 'host',
-        'url': '/host',
+        'url': '/cmdb/host/index',
         'is_nav': True
     },
     {
         'name': '作业平台',
         'code': 'jobs',
-        'url': '/jobs',
+        'url': '/jobs/index',
         'is_nav': True
     },
     {

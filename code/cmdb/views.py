@@ -44,6 +44,12 @@ def HostList(request):
         for prop in category.props.filter(is_must=False)]
     return render(request, 'host/list.html', locals())
 
+def HostSelect(request):
+    category = Category.objects.get(code='host')
+    custom_field = [{'name':prop.name, 'code':prop.code, 'optional':prop.get_optional_value()} \
+        for prop in category.props.filter(is_must=False)]
+    return render(request, 'host/select.html', locals())
+
 def HostListAPI(request):
     # 查询处理
     search_filter = request.GET.get('search_filter', '')

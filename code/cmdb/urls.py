@@ -22,6 +22,7 @@ urlpatterns = [
     path('host/create_or_update', views.CreateOrUpdateHostAPI, name='CreateOrUpdateHost'),
     path('host/index', views.HostIndex, name='HostIndex'),
     path('host/list', views.HostList, name='HostList'),
+    path('host/select', views.HostSelect, name='HostSelect'),
     path('host/list/api', views.HostListAPI, name='HostListAPI'),
     path('host/add', views.HostAdd, name='HostAdd'),
     path('host/model', views.HostModel, name='HostModel'),

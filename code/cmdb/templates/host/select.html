@@ -1,0 +1,243 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>host-list</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>
+    <div class="layui-inline">
+        <div class="layui-input-inline">
+            <input type="text" id="search_filter" name="search_filter" placeholder="根据用主机名、IP或管理员搜索" autocomplete="off" class="layui-input" style="width: 220px;">
+        </div>
+    </div>
+
+    <button class="layui-btn" id="show_form">高级搜索</button>
+    <a><button class="layui-btn layui-btn-disabled dis_or_able" id='transmit'>确定添加</button></a>
+
+    <hr>
+    <form class="layui-form" action='' method="" style="display: none" id="search_form">
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">主机名 </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="hostname" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">IP地址 </label>
+                    <div class="layui-input-inline">
+                    <input type="text" name="ip" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>          
+
+            <div class="layui-form-item">
+                <label class="layui-form-label">操作系统 </label>
+                <div class="layui-input-inline">
+                    <input type="text" name="os" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" pane="">
+                <label class="layui-form-label">处理器</label>
+                <div class="layui-input-block">
+                    <input type="text" name="cpu" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">内存 </label>
+                    <div class="layui-input-inline">
+                        <input type="text" name="mem" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">网卡 </label>
+                    <div class="layui-input-block">
+                        <input type="text" name="eth" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">虚拟/物理 </label>
+                    <div class="layui-input-inline">
+                    <input type="text" name="is_virtual" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div>
+
+            <div class="layui-form-item">
+                <div class="layui-block">
+                    <label class="layui-form-label">Salt状态 </label>
+                    <div class="layui-input-inline">
+                    <input type="text" name="minion_status" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+            </div> 
+
+            {% for field in custom_field %}
+                <div class="layui-form-item">
+                    <div class="layui-block">
+                        <label class="layui-form-label">{{field.name}} </label>
+                        {% if field.optional %}
+                                <div class="layui-input-inline">
+                                    <select name="{{field.code}}">
+                                        <option value=""></option>
+                                        {% for i in field.optional %}
+                                            <option value="{{i}}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                        {% else %}
+                                <div class="layui-input-inline">
+                                    <input type="text" name="{{field.code}}" autocomplete="off" class="layui-input" value="{{field.value}}">
+                                </div>
+                        {% endif %}
+                    </div>
+                </div> 
+            {% endfor %}
+
+            <div class="layui-form-item">
+              <div class="layui-input-block">
+                <button class="layui-btn layui-btn-sm" lay-submit="" lay-filter="demo1">提交搜索</button>
+                <a class="layui-btn layui-btn-sm layui-btn-primary" id="hidden_form">取消</a>
+              </div>
+            </div>
+    </form>
+
+    <table class="layui-hide" id="demo" lay-filter="demo"></table>
+</div>
+
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+
+
+<script>
+    var table = layui.table;
+    var $ = layui.$;
+    var tableIns = table.render({
+        elem: '#demo'
+        ,url: '/cmdb/host/list/api' //数据接口
+        ,id: 'idTest'
+        ,cols: [[
+        {type:'checkbox', fixed: 'left'}
+        ,{field: 'hostname', title: '主机名', width:140, fixed: true}
+        ,{field: 'ip', title: 'IP地址', width:130, sort: true}
+        ,{field: 'os', title: '操作系统', sort: true}
+        ,{field: 'cpu', title: '处理器', sort: true}
+        ,{field: 'mem', title: '内存(G)', width:90, sort: true}
+        ,{field: 'is_virtual', title: '虚拟/物理', width:100, sort: true}
+		,{field: 'minion_status', title: 'Salt', width:60, sort: true}
+        ]]
+        ,page: true
+        ,limits: [10,50,100,1000]
+    });
+
+    // var ids = [];
+    // var ips = [];
+    table.on('checkbox(demo)', function(obj){
+        //console.log(obj)
+        var checkStatus = table.checkStatus('idTest'); //test即为基础参数id对应的值
+        if (checkStatus.data.length > 0){
+            // ids = [];
+            // ips = [];
+            $(".dis_or_able").removeClass("layui-btn-disabled");
+            // for (i in checkStatus.data) {
+            //     ids.push(checkStatus.data[i].minion_id);
+            //     ips.push(checkStatus.data[i].ip);
+            // }
+            // document.getElementById("ids").value = ids;
+            // document.getElementById("ips").value = ips;
+
+        } else {
+            $(".dis_or_able").addClass("layui-btn-disabled");
+        }
+        // console.log(ids, ips);
+        // console.log(checkStatus.data) //获取选中行的数据
+        //console.log(checkStatus.data.length) //获取选中行数量，可作为是否有选中行的条件
+        //console.log(checkStatus.isAll ) //表格是否全选
+
+        });
+
+
+    var active = {
+            reload: function(){
+                var search_filter = $('#search_filter');
+            
+                //执行重载
+                tableIns.reload({
+                    url: '/cmdb/host/list/api',
+                    where: {"search_filter": search_filter.val()}
+                });
+            }
+    };
+
+    $(document).keyup(function(event){
+        if(event.keyCode ==13){
+          active['reload'].call(this);
+        }
+    });
+
+    $('#show_form').click(function(){
+        document.getElementById("search_form").style.display="inline";
+    });
+
+
+    $('#hidden_batch_form').click(function(){
+        document.getElementById("batch_edit_form").style.display="none";
+    });
+
+    $('#hidden_form').click(function(){
+        document.getElementById("search_form").style.display="none";
+    });
+
+    var form = layui.form;
+    form.on('submit(demo1)', function(data){
+        // console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+
+        //执行重载
+        tableIns.reload({
+            url: '/cmdb/host/search',
+            where: data.field
+        });
+        document.getElementById("search_form").style.display="none";
+        return false;
+    });
+
+    $(document).on('click', '#transmit', function(){
+        var checkStatus = table.checkStatus('idTest'); //test即为基础参数id对应的值
+        //console.log(checkStatus.data); //获取选中行的数据
+        var ids = []
+        parent.$('#result').html('');
+        for ( x in checkStatus.data ){
+            //console.log(data);
+            ids.push(checkStatus.data[x].salt_key);
+            // parent.$('#result').append('<b style="color:#393D49">'+checkStatus.data[x].ip+':</b>'+'<pre class="layui-code" class="layui-code"' + ' style="background: black; color:white;" id="' + checkStatus.data[x].salt_key +'"></pre>');
+            parent.$('#result').html('');
+        }
+        // console.log(ids);
+        // console.log(parent);
+        parent.$('#hosts').val(ids);
+        parent.$('#host_nums').html('<span style="color: green">已选'+ids.length+'台</span>');
+        parent.layer.closeAll();
+      })
+</script>
+</body>
+</html>
+
+     

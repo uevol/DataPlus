@@ -1,0 +1,65 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>cronjob-list</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>
+    <a href="{% url 'jobs:CronAdd' %}"><button type="button" class="layui-btn" id="test1">添加作业</button></a>
+    <table class="layui-hide" id="demo" lay-filter="demo"></table>
+</div>
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+<script type="text/html" id="barDemo">
+    <a class="layui-btn layui-btn-xs layui-btn-danger" lay-event="delete">删除</a>
+</script>
+
+<script>
+    var table = layui.table;
+    var layer = layui.layer;
+    var $ = layui.$;
+    var tableIns = table.render({
+        elem: '#demo'
+        ,url: '/jobs/cron/list/api' //数据接口
+        ,cols: [[
+        {field: 'id', title: '任务ID', width:150, fixed: true}
+        ,{field: 'cron_string', title: '时间周期', width:170, sort: true}
+        ,{field: 'targets', title: '执行对象', width:120} 
+        ,{field: 'arg', title: '参数', minWidth: 150}
+        ,{field: 'created_at', title: '创建时间', minWidth: 150}
+        ,{field: 'last_exacuted', title: '上次执行时间', minWidth:80}
+        ,{title: '操作', fixed: 'right', width:80, align:'center', toolbar: '#barDemo'}
+        ]]
+        ,page: true
+        ,limits: [10,50,100,1000]
+    });
+
+    //监听工具条
+    table.on('tool(demo)', function(obj){
+        var data = obj.data;
+        if (obj.event === 'delete') {
+            layer.confirm('确定删除？', function(index){
+                //console.log(data.id);
+                $.get('/jobs/cron/delete/' + data.id, function(res){
+                    if (res.code) {
+                        obj.del();
+                        layer.msg(res.msg, {icon: 1});
+                    }
+                    else {
+                        layer.alert('错误信息:'+ res.msg);
+                    }
+                });
+                layer.close(index);
+            });
+        }
+    });
+</script>
+</body>
+</html>

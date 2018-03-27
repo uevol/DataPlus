@@ -1,0 +1,46 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html style="padding-left: 10px; padding-right: 10px; margin-top: 10px;">
+<head>
+  <meta charset="utf-8">
+  <title>jobs-cmd-result</title>
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <link rel="stylesheet" href="{% static 'layui/css/layui.css' %}"  media="all">
+</head>
+<body>
+
+<div>	
+{% for k, v in ret.items %}
+<pre class="layui-code" lay-title="{{k}}" lay-skin="notepad">
+ {% for key,value in v.process.items %}
+Step {{key}} | {{value.id}}:
+{{'Name'|rjust:'15'}}: {{value.name}}
+{{'Function'|rjust:'15'}}: {{value.fun}}
+{{'Result'|rjust:'15'}}: {{value.result}}
+{{'Comment'|rjust:'15'}}: {{value.comment}}
+{{'Started'|rjust:'15'}}: {{value.start_time}}
+{{'Duration'|rjust:'15'}}: {{value.duration}} ms
+{{'Stderr'|rjust:'15'}}: {{value.changes.stderr}}
+{{'Stdout'|rjust:'15'}}: 
+{{value.changes.stdout}}
+{% endfor %}
+
+Summary:
+{{'Succeeded'|rjust:'15'}}: {{v.summary.succeeded}}
+{{'Failed'|rjust:'15'}}: {{v.summary.failed}}
+{{'Total_Duration'|rjust:'15'}}: {{v.summary.total_duration}} ms
+
+</pre>
+{% endfor %}
+</div>
+
+<script src="{% static 'layui/layui.all.js' %}" charset="utf-8"></script>
+<script>
+layui.use('code', function(){ //加载code模块
+  layui.code(); //引用code方法
+});
+</script>
+</body>
+</html>
